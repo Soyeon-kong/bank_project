@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+    <table class="table">
+        <tr>
+            <td><h5>제목</h5></td><td>{{ board.b_title }}</td>
+            <td><h5>날짜</h5></td><td>{{ board.b_date }}</td>
+        </tr>
+        <tr>
+            <td><h5>글쓴이</h5></td><td>{{ board.b_writer }}</td>
+            <td><h5>조회수</h5></td><td>{{ board.b_hit }}</td>
+        </tr>
+        <tr><td><h5>내용</h5></td></td><td colspan="3">{{ board.b_content }}</td></tr>
+    </table>
+    <input type="hidden" value="{{ board.hit_up }}">
+
+
+    {% if request.session.id == board.b_writer %}
+        <div style="text-align: center;">
+            <a href="../update/{{ board.b_number }}" class="btn btn-primary">수정</a>
+            <input type="button" id="btn_del" class="btn btn-danger" value="삭제">
+        </div>
+
+    {% endif%}
+{% endblock %}
+
+{% block script %}
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('#btn_del').click(function () {
+                if(confirm("정말 삭제하시겠습니까?")){
+                    $.ajax({
+                        url: "{% url 'boarddelete' %}",
+                        type:"GET",
+                        data:{
+                            'b_number' : parseInt({{ board.b_number }})
+                        },
+                        success:function (result) {
+                            alert("삭제완료!")
+                            location.href="{% url 'boardlist' %}"
+                        }
+                    })
+                }else
+                    return
+            })
+        })
+
+    </script>
+{% endblock %}

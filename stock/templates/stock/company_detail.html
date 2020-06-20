@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block style %}
+<style>
+    h3 {
+        background: skyblue;
+        color: white;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+     <hr color="skyblue">
+
+    <table border="1" align="center">
+        <tr>
+    <td>순서</td>
+    <td>회사이름</td>
+    <td>주식코드</td>
+    <td>홈페이지</td>
+        </tr>
+    {% for Company in object_list %}
+    <tr>
+{#    URL 로 detail로 넘겨야 해#}
+        <td>{{ Company.id }}</td>
+        <td><a href="{% url 'stock:company_detail' a=Company.company_name %}">{{ Company.company_name }}</a></td>
+    <td>{{ Company.company_code }} </td>
+    <td><a href="{{ Company.company_page }}">{{ Company.company_page }}</a></td>
+         <tr/>
+    {% endfor %}
+    </table>
+    <hr color="skyblue">
+
+
+{#    페이지 네이션 시작 #}
+
+{% block pagination %} <!--페이지네이션 할 것 -->
+
+{% if is_paginated %} <!-- boolean 으로 활성화 될 수 있으면, 바로아래에 넣고, 안되면 Else에 들어감-->
+<ul class="pagination justify-content-center pagination-sm">
+    <!--왼쪽으로 -->
+    {% if page_obj.has_previous %} <!--#2 page_obj. 는 페이지 정보를 담고 있는 객체다.-->
+    <li class="page-item"> <!--페이지가 제대로 안만들어졌으면 눈에 보이지 말아져라!-->
+        <a class="page-link" href="{% url 'stock:company_list2' %}?page={{page_obj.previous_page_number}}" tabindex="-1">이전</a>
+        <!--list 페이지로 이동, -->
+        <!-- page_obj.previous_page_number 애는 객체에 이전 숫자(번호)로 넘어가는 것이다. 중간괄호{[ 는 출력용. -->
+    </li>
+    {% else %}
+    <li class="page-item disabled"> <!--페이지가 제대로 안만들어졌으면 눈에 보이지 말아져라!-->
+        <a class="page-link" href="#" tabindex="-1">이전</a>
+    </li>
+    {% endif %}
+
+    <!--가운데, 페이지 리스트-->
+    <!--for 문(반복문) 있는만큼 만들어줘라.-->
+    {% for object in page_obj.paginator.page_range %}
+        {% if object >= page_obj.number|add:-5 and object <= page_obj.number|add:5 %}
+            <li class="page-item {% if page_obj.number == forloop.counter %}disabled{% endif %}">
+                <a class="page-link" href="{{ request.path }}?page={{ forloop.counter }}">{{ forloop.counter }}</a>
+            </li>
+         {% endif %}
+    {% endfor %}
+
+    <!--오른쪽으로-->
+    {% if page_obj.has_next %}
+    <li class="page-item">
+        <a class="page-link" href="{% url 'stock:company_list2' %}?page={{ page_obj.next_page_number }}">Next</a>
+    </li>
+
+    {% else %}
+    <li class="page-item disabled">
+        <a class="page-link" href="#">Next</a>
+    </li>
+
+    {% endif %} <!--# 끝-->
+</ul>
+{% endif %}
+{% endblock %}
+
+{% endblock %}
+
+
+
+
+
+{#    ajax 종료 #}
+{# A태그 넘기는 2개 방법 <a style="color:lime;background:blue;" href="{% url 'detail' pk=bookmark.site_name %}">{{bookmark.site_name}}</a>,#}
+{# A태그 넘기는 2개 방법 사이트 주소 : <a href="{{bookmark.url}}">{{bookmark.url}}</a></li>#}
+{% comment %}쭈식 종료{% endcomment %}
+
+
+

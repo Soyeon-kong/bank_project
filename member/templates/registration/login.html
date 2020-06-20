@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}로그인{% endblock %}
+{% block content %}
+
+  <section class="features-icons bg-light text-center">
+  <h1>로그인</h1><br><br>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+            <form method="post" action="{% url 'logincheck' %}">
+            {% csrf_token %}
+                <table class="table" style="width: 50%; margin: 0 auto;">
+                    <tr>
+                        <td><h3>아이디: </h3></td>
+                        <td><input type="text" id="id" name="id"></td>
+                    </tr>
+                    <tr>
+                        <td><h3>패스워드: </h3></td>
+                        <td><input type="password" id="pw" name="pw"></td>
+                    </tr>
+                </table>
+                <br>
+            <input type="submit" class="btn btn-primary btn-lg" value="로그인"><br>
+            </form>
+            <a href="{% url 'create' %}" class="text text-dark">회원가입 하기</a>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

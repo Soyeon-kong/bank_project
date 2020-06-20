@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+<!--템플릿 언어(language) 로 사용중 -->
+{% block title %}금융정보사이트{% endblock %} <!--오버라이드 중-->
+
+{% comment %} 자체 스타일 영역 {% endcomment %}
+{% block style %}
+<style>
+    h3 {
+        background: skyblue;
+        color: white;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+  <!-- Icons Grid -->
+  <section class="features-icons bg-light text-center">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4">
+            <a href="{% url 'stock:company_list2' %}">
+                <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                    <div class="features-icons-icon d-flex">
+                        <i class="icon-screen-desktop m-auto text-primary"></i>
+                    </div>
+                    <h3>주식 정보 조회</h3>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-4">
+            <a href="{% url 'deposit:search' %}">
+                <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                    <div class="features-icons-icon d-flex">
+                        <i class="icon-layers m-auto text-primary"></i>
+                    </div>
+                    <h3>예금 상품 조회</h3>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-4">
+            <a href="{% url 'boardlist' %}">
+                <div class="features-icons-item mx-auto mb-0 mb-lg-3">
+                    <div class="features-icons-icon d-flex">
+                        <i class="icon-check m-auto text-primary"></i>
+                    </div>
+                    <h3>자유 게시판</h3>
+                </div>
+            </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Image Showcases -->
+  <section class="showcase">
+      <div class="container-fluid p-0">
+          <div class="row no-gutters">
+              <div class="col-lg-6 order-lg-2 text-white showcase-img" style="background-image: url('../static/img/image1.png');"></div>
+              <div class="col-lg-6 order-lg-1 my-auto showcase-text">
+                  <h2 style="font-style: italic">"Nothing sedates rationally like large doses of effortless money"</h2>
+                  <h5 style="font-style: italic; text-align: right">-Warren Buffet</h5>
+              </div>
+          </div>
+      </div>
+  </section>
+
+{% endblock %}

@@ -1,0 +1,35 @@
+{#조회 회사 찍어내는 영역#}
+{# ajax로 반환합니다. #}
+<div align="center">
+<br>
+<h3> << {{ d }} >> 조회결과</h3>
+
+ <table border="1" align="center">
+        <tr>
+            <td bgcolor="#e9967a">회사이름</td>
+            <td>주식코드</td>
+            <td>홈페이지</td>
+            <td bgcolor=#6495ed>주가조회</td>
+            <td bgcolor=#1e90ff>그래프</td>
+            <td bgcolor="#ffb6c1">선택박스</td>
+        </tr>
+
+
+
+            <tr/>
+        {% for com in list %}
+             <tr>
+            <td>{{ com.company_name }}</td>
+            <td>{{ com.company_code }}</td>
+            <td>{{ com.company_page }}</td>
+                <td><a href="{% url 'stock:company_detail' a=com.company_name %}">{{ com.company_name }}</a></td>
+            <td><a href="{% url 'stock:stock_detail' s=com.company_name %}">{{ com.company_name }} 주가 그래프 </a></td>
+             <td><input type="checkbox" class="ch" value="{{Company.company_name}}" name="{{Company.company_name}}"></td>
+             </tr>
+        {% endfor %}
+             <hr>
+            <br>
+    </table>
+<hr>
+<br>
+</div>

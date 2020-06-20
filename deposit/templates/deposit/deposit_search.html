@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% block title %}예금상품 조회{% endblock %}
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+
+    function show(obj){
+        if(document.getElementById("b2").innerHTML=='보기'){
+            $(obj).parent().parent().next().find('div').show()
+            document.getElementById("b2").innerHTML = '접기'
+        }else{
+            $(obj).parent().parent().next().find('div').hide()
+            document.getElementById("b2").innerHTML = '보기'
+        }
+    }
+
+    $(function () {
+        $("#b1").click(function(){ {# 검색 버튼 #}
+            $('#deposit_list').empty()
+            $('#count').empty()
+            $.ajax({
+                type:"POST",
+                url:"{% url 'deposit:search_result' %}",
+                data:{
+                    "csrfmiddlewaretoken":"{{ csrf_token }}",
+                    rate_type: $("input[name='d_type']:checked").val(),
+                    money: $("#d_money").val(),
+                    month: $("input[name='d_month']:checked").val()
+                },
+                success:function(data){
+                    $("#th1").show()
+                    var boardItem = ""
+                    for(i = 0; i<data.length; i++) {
+                        boardItem += "<tr><td><input type='checkbox' id='ch' value= '" + data[i]['product']+"'>" + (i+1) + "</td><td>" + data[i]['bank'] + "</td><td>" + data[i]['product'] + "</td><td>"
+                            + data[i]['rate_6']+ "</td><td>" + data[i]['rate_12'] + "</td><td>" + data[i]['rate_24']
+                            + "</td><td>" + data[i]['rate_36'] + "</td><td>" + data[i]['rate_type'] + "</td><td>" +  data[i]['money']+" 원"
+                            + "</td><td><button class='btn btn1' id='b2' onclick='show(this)'>보기</button></td></tr><tr><td colspan='10'><div class='d1'><hr>가입 방법: "
+                            + data[i]['join_way'] + "<br><br>만기 후 이자율: " + data[i]['mtrt_int'] + "<br><br>우대조건: "
+                            + data[i]['spcl_cnd'] + "<br><br>가입대상: " + data[i]['join_member'] + "<br><br>유의사항: "
+                            + data[i]['etc_note'] + "<br><br>최고한도: " + data[i]['max_limit'] + "<hr></div></tr>"
+                    }
+                    $('#count').append("| "+data.length+"개")
+                    $('#deposit_list').append(boardItem)
+
+                }
+            })
+        })
+
+        $("#b3").click(function () {
+            var like_list = new Array()
+            $("input[id='ch']:checked").each(function() {
+                var test = $(this).val()
+                like_list.push(test)
+            })
+            $.ajax({
+                type:"POST",
+                url:"{% url 'deposit:my_deposit' %}",
+                data:{
+                    "csrfmiddlewaretoken":"{{ csrf_token }}",
+                    'my_list[]': like_list,
+                    my_id: "{{ request.session.id }}"
+                },
+                success:function(){
+                    alert("관심상품 목록에 성공적으로 추가되었습니다.")
+                }
+            })
+        })
+
+    })
+</script>
+{% endblock %}
+{% block style %}
+<style>
+    table{
+        text-align: center;
+        width: 80%;
+        margin: 0 auto;
+    }
+    .d1{
+        text-align: left;
+        display: none;
+        background-color: lightgray;
+        width:90%;
+        padding: 10px;
+        margin:0 auto;
+    }
+    #th1{
+        display: none;
+    }
+    .btn1{
+        background-color: lightgray;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<body>
+<div class="container-fluid" style="width:80%">
+<h2 style="padding-top: 20px">검색</h2>
+
+    <table class="table-condensed" style="text-align: left;">
+        <tr>
+            <td>
+                <label for="d_money">저축 금액</label>
+            </td>
+            <td>
+                <input class="form-control col-sm-6" type="text" id="d_money" name="d_money"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="d_month">저축 기간</label>
+            </td>
+            <td>
+                <input class="radiolist" type="radio" name="d_month" value="6"/>6개월
+                <input class="radiolist" type="radio" name="d_month" value="12"/>12개월
+                <input class="radiolist" type="radio" name="d_month" value="24"/>24개월
+                <input class="radiolist" type="radio" name="d_month" value="36"/>36개월
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="d_type">이자 계산 방식</label>
+            </td>
+            <td>
+                <input class="radiolist"  type="radio" name="d_type" value="전체"/>전체
+                <input class="radiolist" type="radio"  name="d_type" value="단리"/>단리
+                <input class="radiolist" type="radio" name="d_type" value="복리"/>복리
+            </td>
+        </tr>
+        <tr><td colspan="2" style="text-align: right"><button class="btn btn-primary" id="b1">검색하기</button></td></tr>
+    </table>
+</div>
+<hr>
+<div class="container-fluid" style="width:80%">
+<h2 style="padding-top: 20px">검색결과 <a id="count" style="font-size: 20px">| {{ deposit_list|length }}개</a></h2>
+<div style="text-align: right; padding: 0 150px 30px;">
+    <button class="btn btn-primary" id="b3">관심 상품 목록에 추가</button>
+</div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th></th>
+            <th>은행 이름</th>
+            <th>상품 이름</th>
+            <th>6개월</th>
+            <th>12개월</th>
+            <th>24개월</th>
+            <th>36개월</th>
+            <th>이자 계산방식</th>
+            <th id="th1" style="color:red">만기시 예상금액</th>
+            <th>상세정보</th>
+
+        </tr>
+        </thead>
+        <tbody id="deposit_list">
+            {% for items in deposit_list %}
+                <tr>
+                    <td><input type="checkbox" id="ch" value="{{ items.product }}"> {{ items.deposit_id }}</td>
+                    <td>{{ items.bank }}</td>
+                    <td>{{ items.product }}</td>
+                    <td>{{ items.rate_6 }}</td>
+                    <td>{{ items.rate_12 }}</td>
+                    <td>{{ items.rate_24 }}</td>
+                    <td>{{ items.rate_36 }}</td>
+                    <td>{{ items.rate_type }}</td>
+                    <td><button class="btn btn1" id="b2" onclick='show(this)'>보기</button></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="10">
+                        <div class = "d1">
+                            <hr>
+                            가입 방법: {{ items.join_way }}<br><br>
+                            만기 후 이자율: {{ items.mtrt_int }}<br><br>
+                            우대조건: {{items.spcl_cnd}}<br><br>
+                            가입대상: {{items.join_member}}<br><br>
+                            유의사항: {{ items.etc_note }}<br><br>
+                            최고한도: {{ items.max_limit }}
+                            <hr>
+                        </div>
+                    </td>
+                </tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+</body>
+{% endblock %}

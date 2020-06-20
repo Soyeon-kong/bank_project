@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}상품 상세{% endblock %}
+{% block content %}
+<body>
+<div class="container">
+<h2 style="padding: 20px 0">{{ data.product }}</h2>
+<table class="table">
+        <thead>
+        <tr>
+            <th>은행 이름</th>
+            <th>6개월</th>
+            <th>12개월</th>
+            <th>24개월</th>
+            <th>36개월</th>
+            <th>이자 계산방식</th>
+
+        </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ data.bank }}</td>
+                <td>{{ data.rate_6 }}</td>
+                <td>{{ data.rate_12 }}</td>
+                <td>{{ data.rate_24 }}</td>
+                <td>{{ data.rate_36 }}</td>
+                <td>{{ data.rate_type }}</td>
+            </tr>
+            <tr>
+                <td colspan="7">
+                    <div class = "d1">
+                        <hr>
+                        가입 방법: {{ data.join_way }}<br><br>
+                        만기 후 이자율: {{ data.mtrt_int }}<br><br>
+                        우대조건: {{data.spcl_cnd}}<br><br>
+                        가입대상: {{data.join_member}}<br><br>
+                        유의사항: {{ data.etc_note }}<br><br>
+                        최고한도: {{ data.max_limit }}
+                        <hr>
+                    </div>
+                </td>
+            </tr>
+
+        </tbody>
+</table>
+</div>
+</body>
+{% endblock %}

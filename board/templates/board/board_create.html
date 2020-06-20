@@ -1,0 +1,26 @@
+{% extends 'base.html'%}
+
+{% block content %}
+    <section class="features-icons bg-light text-center">
+    <h2> 게시글 작성</h2><br>
+
+    <form action="" method="post" >
+        {% csrf_token %}
+        <div class="form-group">
+            <table class="table" style="width:50%; margin:0 auto;">
+                <tr>
+                    <td><label class="col-form-label">제목</label></td>
+                    <td><input class="form-control" type="text" id="b_title" name="b_title"></td>
+                </tr>
+                <tr>
+                    <td><label class="col-form-label">내용</label></td>
+                    <td><textarea class="form-control" type="text" id="b_content" name="b_content"></textarea></td>
+                </tr>
+            </table>
+            <input type="hidden" name="b_writer" value="{{ request.session.id }}" >
+            <input type="submit" class="btn btn-primary" value="글쓰기" id="board_add">
+        </div>
+
+    </form>
+    </section>
+{% endblock %}

@@ -1,0 +1,26 @@
+
+{% extends 'base.html' %} {% comment %} base.html 를 상속받아 html 을 꾸민다.{% endcomment %}
+{% block content %}
+    <br>
+    <div id=data_table>
+<div align="center">
+    <h1 style="color:cornflowerblue">{{ member.name }} 마이페이지</h1>
+    <img src="../../static/stock_img.png" >
+    <br>
+    <hr>
+</div>
+    <br>
+    </div>
+
+    <table border="1" align="center">
+        <tr>
+            <td bgcolor="#6495ed">체크박스 담았던 회사</td>
+        </tr>
+        {% for member in list %}
+            <tr>
+            <td>{{ member.stock_list }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
+<br>

@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{#메인 영역 -> 주식회사 정보 찍어냄 #}
+{% block style %}
+    <style>
+        h3 {
+            background: skyblue;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
+{# ajax 시작 -> Select 조회 테이블 영역#}
+
+{% block script %}
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+        $(function () {
+            $('#search_button').click(function () {
+                var d = $('#search_input').val()
+                alert(d + '를 검색하셨습니다.')
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'stock:company_filter'%}",
+                    data: {
+                        'search_key': d,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function (data) {
+                        alert(d + '회사 관련 검색결과입니다.')
+                        $('#data_table').append(data)
+                    }
+                })
+            })
+        })
+
+        {# 주식담기 찍기 #}
+        totalBox = "";
+ $(function() {
+			$(".ch").click(function(){  // click -> stockbox 담김
+                var stockbox = "";
+				$(".ch").each(function(){
+					if($(this).is(":checked"))
+						stockbox += $(this).val() + ",";
+				});
+				total = "" ;
+				total = stockbox ;
+
+				totalBox = total.substring(0, total.length-1);
+			});
+
+	$('#addstock').click(function() {
+		$.ajax({
+            type : 'POST',
+			url : "{% url 'stock:stock_update' %}",
+			data : { //괄호는 묶어준다
+					'my_id' : '{{ request.session.id }}',
+					'play' : totalBox,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+					},
+					success : function(data) {
+					    alert(totalBox + '마이 페이지에 담겼습니다.')
+						}
+					})
+			    })
+		})
+
+    </script>
+
+
+{% endblock %}
+{# ajax 종료 #}
+
+
+
+
+{% block content %}
+
+    <div id=data_table>
+<div align="center">
+    <h1 style="color:cornflowerblue">주식</h1>
+    <br>
+    <img src="../../static/stock_img.png" >
+    <h4> 상장 회사들의 주가를 조회, 주식그래프를 볼 수 있는 사이트입니다.</h4>
+    <br>
+    <hr>
+</div>
+    <br>
+    </div>
+
+    <table border="1" align="center">
+        <tr>
+            <td>순서</td>
+            <<td bgcolor="#e9967a">회사이름</td>
+            <td>홈페이지</td>
+            <td>주식코드</td>
+            <td bgcolor="#00bfff">주가조회</td>
+            <td bgcolor="#7fffd4">그래프</td>
+            <td bgcolor="#ffb6c1">선택박스</td>
+        </tr>
+        {% for Company in object_list %}
+            <tr>
+                {#    URL 로 detail로 넘겨야 해#}
+                <td>{{ Company.id }}</td>
+                <td>{{ Company.company_name }}</td>
+                <td><a href="{{ Company.company_page }}">{{ Company.company_page }}</a></td>
+                <td>{{ Company.company_code }} </td>
+                <td><a href="{% url 'stock:company_detail' a=Company.company_name %}">{{ Company.company_name }}</a></td>
+                <td><a href="{% url 'stock:stock_detail' s=Company.company_name %}">{{ Company.company_name }} 주가 그래프 </a></td>
+                <td><input type="checkbox" class="ch" value="{{Company.company_name}}" name="{{Company.company_name}}"></td>
+            <tr/>
+        {% endfor %}
+    </table>
+    <br>
+
+
+    <div align="center">
+    {# 회사검색   #}
+    <fieldset id="search_fieldset"><input id="search_input" type="text" value="검색" align="center"/>
+        <button id="search_button" type="submit"><i class="fa fa-search"></i></button>
+        <input type="submit" align="center" id="addstock" value="마이페이지 담기">
+    </fieldset>
+
+
+
+    </div>
+    <br>
+    {# 회사검색 종료   #}
+    {#    페이지 네이션 시작 #}
+    {% block pagination %} <!--페이지네이션 할 것 -->
+
+        {% if is_paginated %} <!-- boolean 으로 활성화 될 수 있으면, 바로아래에 넣고, 안되면 Else에 들어감-->
+            <ul class="pagination justify-content-center pagination-sm">
+                <!--왼쪽으로 -->
+                {% if page_obj.has_previous %} <!--#2 page_obj. 는 페이지 정보를 담고 있는 객체다.-->
+                    <li class="page-item"> <!--페이지가 제대로 안만들어졌으면 눈에 보이지 말아져라!-->
+                        <a class="page-link" href="{% url 'stock:company_list2' %}?page={{ page_obj.previous_page_number }}"
+                           tabindex="-1">이전</a>
+                        <!--list 페이지로 이동, -->
+                        <!-- page_obj.previous_page_number 애는 객체에 이전 숫자(번호)로 넘어가는 것이다. 중간괄호{[ 는 출력용. -->
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"> <!--페이지가 제대로 안만들어졌으면 눈에 보이지 말아져라!-->
+                        <a class="page-link" href="#" tabindex="-1">이전</a>
+                    </li>
+                {% endif %}
+
+                <!--가운데, 페이지 리스트-->
+                <!--for 문(반복문) 있는만큼 만들어줘라.-->
+                {% for object in page_obj.paginator.page_range %}
+                    {% if object >= page_obj.number|add:-5 and object <= page_obj.number|add:5 %}
+                        <li class="page-item {% if page_obj.number == forloop.counter %}disabled{% endif %}">
+                            <a class="page-link"
+                               href="{{ request.path }}?page={{ forloop.counter }}">{{ forloop.counter }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                <!--오른쪽으로-->
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="{% url 'stock:company_list2' %}?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+
+                {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+
+                {% endif %} <!--# 끝-->
+            </ul>
+        {% endif %}
+    {% endblock %}
+
+{% endblock %}
+

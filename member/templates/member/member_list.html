@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% for member in object_list %}
+    <li>id : {{ member.id }}, pw:{{ member.pw }},name: {{member.name}},
+        tel : {{ member.tel }}
+    </li>
+    {% endfor %}
+
+{% endblock %}

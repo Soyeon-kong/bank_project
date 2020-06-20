@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}관심상품 목록{% endblock %}
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#b1").click(function () {
+            var delete_list = new Array()
+            $("input[id='c1']:checked").each(function() {
+                var test = $(this).val()
+                delete_list.push(test)
+            })
+            $.ajax({
+                type:"POST",
+                url:"{% url 'deposit:delete' %}",
+                data:{
+                    "csrfmiddlewaretoken":"{{ csrf_token }}",
+                    'delete_list[]': delete_list,
+                    my_id: "{{ request.session.id }}"
+                },
+                success:function(){
+                    alert("관심상품 목록에서 삭제되었습니다.")
+                    location.reload()
+                }
+            })
+        })
+    })
+</script>
+{% endblock %}
+{% block content %}
+<body>
+<div class="container">
+    <div id=data_table>
+    <div align="center">
+    <h1 style="color:#6495ed">마이페이지</h1><br>
+    <hr>
+    </div>
+    </div>
+
+<h4 style="padding: 20px 0">나의 관심회사</h4>
+<br>
+    <table class="table">
+        {% for item in company_list %}
+            <tr>
+            <td>{{ item.stock_list }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+<hr>
+{#---------------#}
+<h4 style="padding: 20px 0">나의 관심상품</h4>
+<br>
+<table class="table">
+    <tr><th>번호</th><th>이름</th><th><button class="btn btn-primary" id = "b1">삭제</button></th></tr>
+
+{% for item in name_list %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td><a href="/deposit/detail/{{ item }}">{{ item }}</a></td>
+        <td><input type="checkbox" id="c1" value="{{ item }}"></td>
+    </tr>
+{% endfor %}
+</table>
+</div>
+</body>
+{% endblock %}
